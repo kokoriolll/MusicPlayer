@@ -8,6 +8,7 @@ $(function () {
     var player = new Player($audio);
     var progress;
     var voiceprogress;
+    var lyric
 
 
     getPalyList();
@@ -28,6 +29,7 @@ $(function () {
                 });
                 // 初始化歌曲信息
                 initMusicInfo(data[0]);
+                initMusicLyric(data[0]);
             },
             error: function (e) {
                 console.log(e);
@@ -59,6 +61,20 @@ $(function () {
         $(document).attr("title" , "正在播放 " + music.name + "-" + music.singer)
     }
 
+    // 初始化歌词信息
+    function initMusicLyric(music) {
+        lyric = new Lyric(music.link_lrc);
+        var $lyricContainer = $(".song_lyric");
+        // 清空上一首歌词信息
+        $lyricContainer.html("");
+        lyric.loadLyric(function (index,ele) {
+            $.each(lyric.lyrics,function (index,ele) {
+                var $item = $("<li> " + ele + " </li>");
+                $lyricContainer.append($item);
+            });
+        });
+    };
+
 
     initProgress();
     // 初始化进度条
@@ -71,9 +87,9 @@ $(function () {
         progress.progressClick(function (value) {
             player.musicSeekTo(value);
         });
-        progress.progressMove(function (value) {
+        /*progress.progressMove(function (value) {
             player.musicSeekTo(value);
-        });
+        });*/
 
         //声音点击部分
         var $voiceBar = $(".music_voice_bar");
@@ -83,9 +99,9 @@ $(function () {
         voiceprogress.progressClick(function (value) {
             player.musicVoiceSeekTo(value);
         });
-        voiceprogress.progressMove(function (value) {
+        /*voiceprogress.progressMove(function (value) {
             player.musicVoiceSeekTo(value);
-        });
+        });*/
     }
 
     // 初始化事件监听
@@ -148,7 +164,8 @@ $(function () {
 
             //切换歌曲信息
             initMusicInfo($item.get(0).music);
-
+            //切换歌词信息
+            initMusicLyric($item.get(0).music);
 
 
         });
@@ -203,6 +220,18 @@ $(function () {
             var value = currentTime / duration * 100;
             progress.setProgress(value);
             /*console.log(value);*/
+
+            // 实现歌词的同步
+            var index = lyric.currentIndex(currentTime);
+            var $item = $(".song_lyric li").eq(index);
+            $item.addClass("cur");
+            $item.siblings().removeClass("cur");
+
+            if (index <= 2) return;
+
+            $(".song_lyric").css({
+                marginTop : ((-index + 2) *30)
+            })
         });
 
         // 监听声音按钮的点击

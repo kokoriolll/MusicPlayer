@@ -39,7 +39,7 @@
                 var normalLeft = $(this).offset().left;
                 var barWidth = $(".music_progress_bar").width();
                 //鼠标移动事件
-                $(".footer_in").mousemove(function (event) {
+                this.$progressBar.mousemove(function (event) {
 
                     // 获取点击的位置距离窗口的位置
                     var eventLeft = event.pageX;
@@ -55,8 +55,8 @@
                 });
             });
             //鼠标抬起事件
-            $(".footer_in").mouseup(function (event) {
-                $(".footer_in").off("mousemove");
+            this.$progressBar.mouseup(function (event) {
+                this.$progressBar.off("mousemove");
                 $this.isMove = false;
                 var eventLeft = event.pageX;
                 var normalLeft = $(".music_progress_bar").offset().left;
